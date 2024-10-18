@@ -1,0 +1,17 @@
+pluginManagement {
+    id 'net.neoforged.gradle.userdev' version '7.0.142' apply false
+    id "net.neoforged.moddev" version "0.1.126" apply false
+    id 'org.spongepowered.mixin' version '0.8.7' apply false
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        maven { url = 'https://maven.neoforged.net/releases' }
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
+rootProject.name = 'MultiplatformExample'
+include('common', 'neoforge')

@@ -1,0 +1,21 @@
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    apply plugin: 'org.spongepowered.mixin'
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+    version = mod_version
+    group = mod_group_id
+    base {
+        archivesName = "${mod_name}-${minecraft_version}"
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+        options.release = 21
+    }
+}
+
