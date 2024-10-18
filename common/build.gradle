@@ -1,6 +1,17 @@
 plugins {
     id 'java'
+    id 'org.spongepowered.gradle.vanilla'
 }
+
+base {
+    archivesName = "${mod_name}-common"
+}
+version = "${minecraft_version}-${mod_version}"
+
+minecraft {
+    version(minecraft_version)
+}
+
 
 repositories {
     maven {
@@ -10,14 +21,13 @@ repositories {
 }
 
 dependencies {
-    compileOnly "net.fabricmc:sponge-mixin:${mixin_version}"
-    annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}")
-    compileOnly "vazkii.patchouli:Patchouli-xplat:${patchouli_version}"
+
+    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
-    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+//    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
 }
 
 test {
@@ -35,7 +45,10 @@ processResources {
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {
-        register('mavenJava', MavenPublication) {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
             from components.java
         }
     }
