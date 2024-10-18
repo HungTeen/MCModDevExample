@@ -1,4 +1,4 @@
-package com.example.examplemod;
+package hungteen.example;
 
 import java.util.List;
 import java.util.Set;

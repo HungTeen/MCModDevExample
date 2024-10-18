@@ -1,0 +1,91 @@
+plugins {
+    id 'fabric-loom'
+}
+
+base {
+    archivesName = "${mod_name}-fabric"
+}
+version = "${minecraft_version}-${mod_version}"
+
+loom {
+    mixin.defaultRefmapName = "patchouli.refmap.json"
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("../run")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("../run")
+        }
+        gameTest {
+            server()
+            ideConfigGenerated(true)
+            vmArg "-Dfabric-api.gametest=1"
+        }
+    }
+}
+
+dependencies {
+    compileOnly project(":common")
+
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+
+//    modCompileOnly "mezz.jei:jei-1.21-common-api:19.1.1.19"
+}
+
+compileJava {
+    source(project(":common").sourceSets.main.allSource)
+}
+
+sourcesJar {
+    from project(":common").sourceSets.main.allJava
+}
+
+processResources {
+    from project(":common").sourceSets.main.resources
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+task apiJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'api'
+
+    include "hungteen/${mod_id}/api/**"
+
+    // Sources included because of MinecraftForge/ForgeGradle#369
+    from project(":common").sourceSets.main.allJava
+    from(sourceSets.main.allJava)
+    from(sourceSets.main.output)
+}
+
+artifacts {
+    archives apiJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://" + System.getenv("local_maven")
+        }
+    }
+}
