@@ -1,6 +1,7 @@
 pluginManagement {
     plugins{
         id 'net.neoforged.gradle.userdev' version '7.0.142' apply false
+        id 'net.minecraftforge.gradle' version '6.0.24' apply false
         id 'org.spongepowered.mixin' version '0.7-SNAPSHOT' apply false
         id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT' apply false
         id 'fabric-loom' version '1.7-SNAPSHOT' apply false
@@ -12,14 +13,33 @@ pluginManagement {
         maven {
             name = 'NeoForge'
             url = 'https://maven.neoforged.net/releases'
+            content {
+                includeGroupAndSubgroups("net.neoforged")
+                includeGroup("codechicken")
+                includeGroup("net.covers1624")
+            }
         }
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
+            content {
+                includeGroupAndSubgroups("net.fabricmc")
+                includeGroup("fabric-loom")
+            }
+        }
+        maven {
+            name = 'Forge'
+            url = 'https://maven.minecraftforge.net'
+            content {
+                includeGroupAndSubgroups("net.minecraftforge")
+            }
         }
         maven {
             name = 'Sponge'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
+            content {
+                includeGroupAndSubgroups("org.spongepowered")
+            }
         }
     }
 }
@@ -29,4 +49,8 @@ plugins {
 }
 
 rootProject.name = 'MultiplatformExample'
-include('common', 'neoforge', 'fabric')
+
+include('common')
+include('neoforge')
+include('fabric')
+include('forge')

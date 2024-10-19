@@ -50,6 +50,10 @@ sourcesJar {
     from project(":common").sourceSets.main.allJava
 }
 
+tasks.withType(Javadoc).configureEach {
+    source(project(":common").sourceSets.main.allJava)
+}
+
 processResources {
     from project(":common").sourceSets.main.resources
     inputs.property "version", project.version
