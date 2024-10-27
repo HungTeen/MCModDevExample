@@ -1,6 +1,7 @@
 plugins {
     id 'java'
-    id 'org.spongepowered.gradle.vanilla'
+//    id 'org.spongepowered.gradle.vanilla'
+    id 'net.neoforged.moddev'
 }
 
 base {
@@ -8,8 +9,28 @@ base {
 }
 version = "${minecraft_version}-${mod_version}"
 
-minecraft {
-    version(minecraft_version)
+neoForge {
+    // Look for versions on https://projects.neoforged.net/neoforged/neoform
+    neoFormVersion = "${minecraft_version}-${neoform_version}"
+
+    parchment {
+        // Get versions from https://parchmentmc.org/docs/getting-started
+        // Omit the "v"-prefix in mappingsVersion
+        minecraftVersion = minecraft_version
+        mappingsVersion = "2024.05.01"
+    }
+    
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        data {
+            data()
+        }
+    }
 }
 
 repositories {

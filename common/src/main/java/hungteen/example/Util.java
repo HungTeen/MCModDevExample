@@ -10,6 +10,5 @@ import net.minecraft.world.entity.Entity;
 public class Util {
 
     public static void predicate(Entity entity){
-
     }
 }
