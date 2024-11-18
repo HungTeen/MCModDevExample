@@ -17,6 +17,8 @@ neoForge {
     validateAccessTransformers = true
     accessTransformers.files.setFrom(project(":common").file("src/main/resources/META-INF/accesstransformer-nf.cfg"))
 
+    addModdingDependenciesTo(sourceSets.test)
+
     runs {
         configureEach {
             logLevel = org.slf4j.event.Level.DEBUG
@@ -44,7 +46,6 @@ tasks.named('test').configure {
     //Disable builtin test as we have JUnit enabled in Common
     enabled(false)
 }
-
 
 tasks.withType(JavaCompile).configureEach {
     source(project(":common").sourceSets.main.allSource)
