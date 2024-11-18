@@ -1,45 +1,49 @@
 plugins {
-    id 'fabric-loom'
+    id("multiplatform-convention")
+
+    alias(libs.plugins.loom)
+    alias(libs.plugins.modpublish)
 }
 
+version = modVersion
+var mcVersion = libs.versions.minecraft.asProvider().get()
 base {
-    archivesName = "${mod_name}-fabric"
+    archivesName = "${modName}-fabric-${mcVersion}"
 }
-version = "${minecraft_version}-${mod_version}"
 
 loom {
-    mixin.defaultRefmapName = "patchouli.refmap.json"
+    accessWidenerPath = file("src/main/resources/${modId}.accesswidener")
+
+    mixin.defaultRefmapName.set("${modId}.refmap.json")
+
     runs {
-        client {
+        named("client") {
+            configName = "Fabric Client"
+
             client()
-            setConfigName("Fabric Client")
             ideConfigGenerated(true)
-            runDir("../run")
+            runDir("run/" + name)
+            programArg("--username=Dev")
         }
-        server {
-            server()
-            setConfigName("Fabric Server")
-            ideConfigGenerated(true)
-            runDir("../run")
-        }
-        gameTest {
+
+        named("server") {
+            configName = "Fabric Server"
+
             server()
             ideConfigGenerated(true)
-            vmArg "-Dfabric-api.gametest=1"
+            runDir("run/" + name)
         }
     }
 }
 
 dependencies {
-    compileOnly project(":common")
-
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
-
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-
-//    modCompileOnly "mezz.jei:jei-1.21-common-api:19.1.1.19"
+    minecraft(libs.minecraft)
+    mappings(loom.layered() {
+        officialMojangMappings()
+    })
+    modImplementation(libs.fabric)
+    modImplementation(libs.fabric.api)
+    compileOnly(project(":common"))
 }
 
 compileJava {
@@ -47,26 +51,18 @@ compileJava {
 }
 
 sourcesJar {
-    from project(":common").sourceSets.main.allJava
-}
-
-tasks.withType(Javadoc).configureEach {
-    source(project(":common").sourceSets.main.allJava)
+    from project(":common").sourceSets.main.allSource
 }
 
 processResources {
     from project(":common").sourceSets.main.resources
-    inputs.property "version", project.version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
+    exclude("**/accesstransformer-nf.cfg")
 }
 
 task apiJar(type: Jar, dependsOn: classes) {
     archiveClassifier = 'api'
 
-    include "hungteen/${mod_id}/api/**"
+    include "hungteen/${modId}/api/**"
 
     // Sources included because of MinecraftForge/ForgeGradle#369
     from project(":common").sourceSets.main.allJava
@@ -81,15 +77,12 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
+            artifactId = modName
+            version "${mcVersion}-${modVersion}-fabric"
             from components.java
         }
     }
     repositories {
-        maven {
-            url "file://" + System.getenv("local_maven")
-        }
+        mavenLocal()
     }
 }
